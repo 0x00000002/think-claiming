@@ -1,0 +1,8 @@
+{
+  "mainnet": {
+    "StakingStorage": {
+      "address": "0xFaa8A501cf7Ffd8080B0864F2C959E8cbcf83030",
+      "startBlock": 22975181
+    }
+  }
+}

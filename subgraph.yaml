@@ -1,0 +1,41 @@
+specVersion: 1.3.0
+indexerHints:
+  prune: auto
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: StakingStorage
+    network: mainnet
+    source:
+      address: "0xFaa8A501cf7Ffd8080B0864F2C959E8cbcf83030"
+      abi: StakingStorage
+      startBlock: 22975181
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.9
+      language: wasm/assemblyscript
+      entities:
+        - CheckpointCreated
+        - RoleAdminChanged
+        - RoleGranted
+        - RoleRevoked
+        - Staked
+        - Unstaked
+      abis:
+        - name: StakingStorage
+          file: ./abis/StakingStorage.json
+      eventHandlers:
+        - event: CheckpointCreated(indexed address,indexed uint16,uint128,uint16)
+          handler: handleCheckpointCreated
+        - event: RoleAdminChanged(indexed bytes32,indexed bytes32,indexed bytes32)
+          handler: handleRoleAdminChanged
+        - event: RoleGranted(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleGranted
+        - event: RoleRevoked(indexed bytes32,indexed address,indexed address)
+          handler: handleRoleRevoked
+        - event: Staked(indexed address,indexed bytes32,uint128,indexed uint16,uint16,uint16)
+          handler: handleStaked
+        - event: Unstaked(indexed address,indexed bytes32,indexed uint16,uint128)
+          handler: handleUnstaked
+      file: ./src/staking-storage.ts

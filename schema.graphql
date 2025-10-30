@@ -1,0 +1,64 @@
+type CheckpointCreated @entity(immutable: true) {
+  id: Bytes!
+  staker: Bytes! # address
+  day: Int! # uint16
+  balance: BigInt! # uint128
+  stakesCount: Int! # uint16
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RoleAdminChanged @entity(immutable: true) {
+  id: Bytes!
+  role: Bytes! # bytes32
+  previousAdminRole: Bytes! # bytes32
+  newAdminRole: Bytes! # bytes32
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RoleGranted @entity(immutable: true) {
+  id: Bytes!
+  role: Bytes! # bytes32
+  account: Bytes! # address
+  sender: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type RoleRevoked @entity(immutable: true) {
+  id: Bytes!
+  role: Bytes! # bytes32
+  account: Bytes! # address
+  sender: Bytes! # address
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Staked @entity(immutable: true) {
+  id: Bytes!
+  staker: Bytes! # address
+  stakeId: Bytes! # bytes32
+  amount: BigInt! # uint128
+  stakeDay: Int! # uint16
+  daysLock: Int! # uint16
+  flags: Int! # uint16
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Unstaked @entity(immutable: true) {
+  id: Bytes!
+  staker: Bytes! # address
+  stakeId: Bytes! # bytes32
+  unstakeDay: Int! # uint16
+  amount: BigInt! # uint128
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
