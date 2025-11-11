@@ -3,6 +3,15 @@
     "StakingStorage": {
       "address": "0xFaa8A501cf7Ffd8080B0864F2C959E8cbcf83030",
       "startBlock": 22975181
+    },
+    "RewardManagerV1_1": {
+      "address": "0xA865F7aA0c487e7A16b8192ABB7276D9D1bBd693"
+    },
+    "PoolManager": {
+      "address": "0xC7e162f85a4470046B22d059dc6a85A40f039AD1"
+    },
+    "ERC721MInitializableV1_0_1": {
+      "address": "0x11B3EfbF04F0bA505F380aC20444B6952970AdA6"
     }
   }
 }

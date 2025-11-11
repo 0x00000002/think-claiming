@@ -1,43 +1,3 @@
-type CheckpointCreated @entity(immutable: true) {
-  id: Bytes!
-  staker: Bytes! # address
-  day: Int! # uint16
-  balance: BigInt! # uint128
-  stakesCount: Int! # uint16
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RoleAdminChanged @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  previousAdminRole: Bytes! # bytes32
-  newAdminRole: Bytes! # bytes32
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RoleGranted @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
-
-type RoleRevoked @entity(immutable: true) {
-  id: Bytes!
-  role: Bytes! # bytes32
-  account: Bytes! # address
-  sender: Bytes! # address
-  blockNumber: BigInt!
-  blockTimestamp: BigInt!
-  transactionHash: Bytes!
-}
 
 type Staked @entity(immutable: true) {
   id: Bytes!
@@ -61,4 +21,92 @@ type Unstaked @entity(immutable: true) {
   blockNumber: BigInt!
   blockTimestamp: BigInt!
   transactionHash: Bytes!
+}
+
+type RewardClaimed @entity(immutable: true) {
+  id: Bytes!
+  user: Bytes! # address
+  stakeId: Bytes! # bytes32
+  poolId: BigInt! # uint256
+  strategyId: BigInt! # uint256
+  rewardAmount: BigInt! # uint256
+  claimDay: Int! # uint16
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type WalletAggregate @entity(immutable: false) {
+  id: ID! # user address
+  totalStaked: BigInt!
+  lastUpdated: BigInt!
+}
+
+type AnnouncePool @entity(immutable: true) {
+  id: Bytes!
+  poolId: BigInt! # uint256
+  startDay: Int! # uint16
+  endDay: Int! # uint16
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type PoolUpserted @entity(immutable: true) {
+  id: Bytes!
+  poolId: BigInt! # uint256
+  startDay: Int! # uint16
+  endDay: Int! # uint16
+  totalPoolWeight: BigInt! # uint256
+  parentPoolId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type StrategyAddedToLayer @entity(immutable: true) {
+  id: Bytes!
+  poolId: BigInt! # uint256
+  layer: BigInt! # uint256
+  strategyId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type StrategyRemovedFromLayer @entity(immutable: true) {
+  id: Bytes!
+  poolId: BigInt! # uint256
+  layer: BigInt! # uint256
+  strategyId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type Pool @entity(immutable: false) {
+  id: ID!                  
+  startDay: Int!           
+  endDay: Int!             
+  totalPoolWeight: BigInt! 
+  parentPoolId: BigInt!    
+  hasAnnounced: Boolean!   
+  lastUpdated: BigInt!     
+}
+
+
+type Transfer @entity(immutable: true) {
+  id: Bytes!
+  from: Bytes! # address
+  to: Bytes! # address
+  tokenId: BigInt! # uint256
+  blockNumber: BigInt!
+  blockTimestamp: BigInt!
+  transactionHash: Bytes!
+}
+
+type NFTBalance @entity(immutable: false) {
+  id: ID! # wallet address
+  count: Int!
+  lastUpdated: BigInt!
 }
