@@ -29,34 +29,25 @@ export function handlePoolUpserted(event: PoolUpsertedEvent): void {
 
   entity.save();
 
-  // id = poolId как строка
+  // Update Pool aggregate
   let id = event.params.poolId.toString();
   let p = Pool.load(id);
 
   if (p == null) {
     p = new Pool(id);
-    // дефолты на случай первого апдейта
-    p.totalPoolWeight = BigInt.zero();
     p.hasAnnounced = false;
-    p.parentPoolId = BigInt.zero();
-    p.startDay = 0;
-    p.endDay = 0;
   }
 
-  // обновляем поля из события
-  p.startDay = event.params.startDay; // uint16 -> Int
-  p.endDay = event.params.endDay; // uint16 -> Int
-  p.totalPoolWeight = event.params.totalPoolWeight; // uint256 -> BigInt
-  p.parentPoolId = event.params.parentPoolId; // uint256 -> BigInt
-
-  // метка времени последнего апдейта
+  p.startDay = event.params.startDay;
+  p.endDay = event.params.endDay;
+  p.totalPoolWeight = event.params.totalPoolWeight;
+  p.parentPoolId = event.params.parentPoolId;
   p.lastUpdated = event.block.timestamp;
 
   p.save();
 }
 
 export function handleAnnouncePool(event: AnnouncePoolEvent): void {
-  // Save immutable event entity
   let entity = new AnnouncePool(
     event.transaction.hash.concatI32(event.logIndex.toI32())
   );
@@ -70,19 +61,16 @@ export function handleAnnouncePool(event: AnnouncePoolEvent): void {
 
   entity.save();
 
-  // Update Pool entity
   let id = event.params.poolId.toString();
   let p = Pool.load(id);
 
   if (p == null) {
-    // если почему-то анонс пришёл до первого PoolUpserted — создадим скелет
     p = new Pool(id);
     p.totalPoolWeight = BigInt.zero();
     p.parentPoolId = BigInt.zero();
     p.startDay = event.params.startDay;
     p.endDay = event.params.endDay;
   } else {
-    // обновим даты из события анонса (на всякий случай)
     p.startDay = event.params.startDay;
     p.endDay = event.params.endDay;
   }

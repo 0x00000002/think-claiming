@@ -110,3 +110,19 @@ type NFTBalance @entity(immutable: false) {
   count: Int!
   lastUpdated: BigInt!
 }
+
+type PoolWeight @entity(immutable: false) {
+  id: ID!  # poolId
+  poolId: BigInt!
+  livePoolWeight: BigInt!
+  lastCalculated: BigInt!
+  userWeights: [UserPoolWeight!]! @derivedFrom(field: "pool")
+}
+
+type UserPoolWeight @entity(immutable: false) {
+  id: ID!  # poolId-wallet
+  pool: PoolWeight!
+  wallet: Bytes!
+  stakeWeight: BigInt!
+  lastUpdated: BigInt!
+}
