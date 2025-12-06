@@ -59,7 +59,6 @@ async function main() {
   const TOTAL_DEPOSITED = toWei("12992197");
   const CURRENT_BALANCE = 0n;
 
-  // Преобразуем allocations в lowercase keys
   const allocationsMap = {};
   let totalPlanned = 0n;
 
@@ -72,7 +71,6 @@ async function main() {
   console.log("Fetching all claims from subgraph...");
   const allClaims = await getAllClaims();
 
-  // Группировка claims по адресам
   const claimsByAddress = {};
   for (const claim of allClaims) {
     const addr = claim.claimer.toLowerCase();
@@ -82,20 +80,24 @@ async function main() {
     claimsByAddress[addr] += BigInt(claim.amount);
   }
 
-  // Суммы
   let totalClaimed = 0n;
   let totalOverclaim = 0n;
   let totalRemaining = 0n;
+  let addressesWithClaims = 0;
 
-  // Вывод для каждого адреса из графа
-  for (const [address, claimed] of Object.entries(claimsByAddress)) {
-    const planned = allocationsMap[address] || 0n;
+  // Только адреса из списка
+  for (const [address, planned] of Object.entries(allocationsMap)) {
+    const claimed = claimsByAddress[address] || 0n;
     const remaining = planned - claimed;
 
     totalClaimed += claimed;
 
+    if (claimed > 0n) {
+      addressesWithClaims++;
+    }
+
     if (remaining < 0n) {
-      totalOverclaim += -remaining; // абсолютное значение overclaim
+      totalOverclaim += -remaining;
     } else {
       totalRemaining += remaining;
     }
@@ -105,18 +107,16 @@ async function main() {
     );
   }
 
-  // Итоговые суммы
   console.log("\n" + "=".repeat(80));
-  console.log("TOTALS");
+  console.log("TOTALS (KNOWN ADDRESSES ONLY)");
   console.log("=".repeat(80));
+  console.log(`Total addresses in list: ${Object.keys(allocationsMap).length}`);
+  console.log(`Addresses with claims: ${addressesWithClaims}`);
   console.log(
-    `Total addresses with claims: ${Object.keys(claimsByAddress).length}`
+    `Total planned: ${fromWei(totalPlanned)} tokens (${totalPlanned.toString()} wei)`
   );
   console.log(
-    `Total planned (from list): ${fromWei(totalPlanned)} tokens (${totalPlanned.toString()} wei)`
-  );
-  console.log(
-    `Total claimed (actual): ${fromWei(totalClaimed)} tokens (${totalClaimed.toString()} wei)`
+    `Total claimed: ${fromWei(totalClaimed)} tokens (${totalClaimed.toString()} wei)`
   );
   console.log(
     `Total overclaim: ${fromWei(totalOverclaim)} tokens (${totalOverclaim.toString()} wei)`
@@ -133,7 +133,6 @@ async function main() {
   );
   console.log();
 
-  // Анализ
   const expectedBalance = TOTAL_DEPOSITED - totalClaimed;
   const discrepancy = expectedBalance - CURRENT_BALANCE;
   const listDiscrepancy = TOTAL_DEPOSITED - totalPlanned;
@@ -141,7 +140,7 @@ async function main() {
   console.log("DISCREPANCIES");
   console.log("=".repeat(80));
   console.log(
-    `Expected balance: ${fromWei(expectedBalance)} tokens (deposited - claimed)`
+    `Expected balance: ${fromWei(expectedBalance)} tokens (deposited - claimed by known)`
   );
   console.log(`Actual balance: ${fromWei(CURRENT_BALANCE)} tokens`);
   console.log(`Balance discrepancy: ${fromWei(discrepancy)} tokens`);
@@ -171,6 +170,20 @@ async function main() {
       `⚠️  LIST MISMATCH: ${fromWei(Math.abs(Number(listDiscrepancy)))} tokens ${listDiscrepancy > 0n ? "not in list" : "extra in list"}`
     );
   }
+
+  const csvLines = ["address,planned,claimed,remaining"];
+
+  for (const [address, planned] of Object.entries(allocationsMap)) {
+    const claimed = claimsByAddress[address] || 0n;
+    const remaining = planned - claimed;
+
+    csvLines.push(
+      `${address},${fromWei(planned)},${fromWei(claimed)},${fromWei(remaining)}`
+    );
+  }
+
+  fs.writeFileSync("results.csv", csvLines.join("\n"));
+  console.log("\nResults saved to results.csv (Excel-ready)");
 }
 
 main().catch(console.error);
